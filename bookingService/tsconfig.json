@@ -1,17 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "baseUrl": "./", // Use project root as base path
+    "paths": {
+      "*": ["src/*"] // Optional: Map imports to `src` directory for clean imports
+    },
+    "target": "ES2020", // Adjust if your environment doesn't support this
+    "module": "CommonJS", // For Node.js, or "ESNext" for ESM
+    "outDir": "build", // Recommended: Specify an output directory for compiled files
+    "rootDir": "src", // Ensure files are compiled from the `src` directory
+    "esModuleInterop": true, // Enable interoperability with CommonJS modules
+    "strict": true, // Keep for type safety
+    "skipLibCheck": true, // Speeds up compilation; enable only if needed
+    "forceConsistentCasingInFileNames": true, // Cross-platform file compatibility
+    "resolveJsonModule": true, // Allow importing JSON files
+    "declaration": true, // Generate `.d.ts` files for libraries
+    "sourceMap": true // Optional: Useful for debugging
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "build"] // Exclude compiled files
 }

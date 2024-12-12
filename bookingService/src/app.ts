@@ -8,7 +8,7 @@ import { errorHandler, NotFoundError } from './middlewares/errorHandler';
 import { deleteBookingRouter } from './routes/deleteBooking';
 import { indexBookingRouter } from './routes/indexBooking';
 import { showBookingRouter } from './routes/showBooking';
-import { newBookingRouter } from './routes/newBooking';
+import { newBookingRouter } from './routes/newBookings';
 
 const app = express();
 
@@ -19,6 +19,7 @@ app.set('trust proxy', true);
 app.use(json());
 
 // Cookie session middleware (even though we won't use it for now, we can add it later if needed)
+//{****}
 app.use(
   cookieSession({
     signed: false,
