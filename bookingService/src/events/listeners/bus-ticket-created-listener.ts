@@ -11,8 +11,8 @@ export class BusTicketCreatedListener extends Listener<BusTicketCreatedEvent> {
     const { id, userId, busId, seats, amount } = data;
 
     // Save the booking info to the database
-    const booking = Booking.build({
-      id,
+    const booking = new Booking({
+      _id: id, // Use _id for MongoDB compatibility
       userId,
       busId,
       seats,
