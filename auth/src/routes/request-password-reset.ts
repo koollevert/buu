@@ -2,8 +2,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { User } from '../models/user';
 import { validateRequest, BadRequestError } from '@selmathistckt/common';
-import crypto from 'crypto';
-import { PasswordResetToken } from '../models/password-reset-token';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -20,17 +19,13 @@ router.post('/api/users/password-reset/request', [
         throw new BadRequestError('Email not found');
     }
 
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // Token expires in 1 hour
-
-    const passwordResetToken = PasswordResetToken.build({
-        token,
-        userId: user.id,
-        expiresAt
-    });
-
-    await passwordResetToken.save();
+    const token = jwt.sign(
+        {
+            userId: user.id,
+        },
+        process.env.JWT_KEY!,
+        { expiresIn: '1h' } // Token expires in 1 hour
+    );
 
     // Send token to user's email (implementation not shown)
     // sendPasswordResetEmail(user.email, token);
@@ -39,3 +34,6 @@ router.post('/api/users/password-reset/request', [
 });
 
 export { router as requestPasswordResetRouter };
+
+
+// request-password-reset.ts: Handles the request to generate and send a password reset token.

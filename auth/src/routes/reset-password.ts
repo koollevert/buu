@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { PasswordResetToken } from '../models/password-reset-token';
 import { User } from '../models/user';
 import { validateRequest, BadRequestError } from '@selmathistckt/common';
+import jwt from 'jsonwebtoken';
 import { Password } from '../services/password';
 
 const router = express.Router();
@@ -18,13 +18,14 @@ router.post('/api/users/password-reset/reset', [
 ], validateRequest, async (req: Request, res: Response) => {
     const { token, password } = req.body;
 
-    const passwordResetToken = await PasswordResetToken.findOne({ token });
-
-    if (!passwordResetToken) {
+    let payload;
+    try {
+        payload = jwt.verify(token, process.env.JWT_KEY!) as { userId: string };
+    } catch (err) {
         throw new BadRequestError('Invalid or expired token');
     }
 
-    const user = await User.findById(passwordResetToken.userId);
+    const user = await User.findById(payload.userId);
 
     if (!user) {
         throw new BadRequestError('User not found');
@@ -32,8 +33,6 @@ router.post('/api/users/password-reset/reset', [
 
     user.password = await Password.toHash(password);
     await user.save();
-
-    await PasswordResetToken.deleteOne({ token });
 
     res.status(200).send({ message: 'Password reset successful' });
 });
