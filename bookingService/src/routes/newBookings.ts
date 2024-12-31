@@ -15,6 +15,10 @@ const EXPIRATION_WINDOW_SECONDS = 1 * 60; // Adjust the expiration time as per y
 router.post(
   '/api/bookings',
   [
+    body('userId')
+      .not()
+      .isEmpty()
+      .withMessage('UserId must be provided'), //something went
     body('busId')
       .not()
       .isEmpty()
