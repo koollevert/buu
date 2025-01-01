@@ -45,13 +45,13 @@ router.post(
       }
 
       // Check seat availability
-      const unavailableSeats = seats.filter((seat) => bus.seats[seat]);
+      const unavailableSeats = seats.filter((seat: string | number) => bus.seats[seat as any]);
       if (unavailableSeats.length) {
         throw new BadRequestError(`Seats ${unavailableSeats.join(', ')} are already booked`);
       }
 
       // Mark the seats as booked
-      seats.forEach((seat) => (bus.seats[seat] = true));
+      seats.forEach((seat: string | number) => (bus.seats[seat as any] = true));
       await bus.save();
 
       // Calculate expiration (if applicable to booking logic)
