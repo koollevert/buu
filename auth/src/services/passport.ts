@@ -11,10 +11,9 @@ import { User } from '../models/user';
 //     {
 //       clientID: process.env.GOOGLE_CLIENT_ID as string,
 //       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-//       callbackURL: "/api/users/auth/google/callback", // URL for callback after Google OAuth
+//       callbackURL: "/api/auth/google/callback", // Updated path
 //     },
 //     async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
-//       // Find or create a user in the database
 //       let user = await User.findOne({ oauthId: profile.id, oauthProvider: 'google' });
 
 //       if (!user) {
@@ -37,10 +36,9 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-      callbackURL: "/api/users/auth/github/callback", // URL for callback after GitHub OAuth
+      callbackURL: "/api/auth/github/callback", // Updated path
     },
     async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
-      // Find or create a user in the database
       let user = await User.findOne({ oauthId: profile.id, oauthProvider: 'github' });
 
       if (!user) {
@@ -56,17 +54,3 @@ passport.use(
     }
   )
 );
-
-// Passport session handling (serialize/deserialize)
-passport.serializeUser((user: any, done) => {
-  done(null, user.id); // Store user ID in session
-});
-
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await User.findById(id); // Retrieve user by ID from DB
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});

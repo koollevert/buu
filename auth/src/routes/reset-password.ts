@@ -1,13 +1,13 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { User } from '../models/user';
 import { validateRequest, BadRequestError } from '@selmathistckt/common';
 import jwt from 'jsonwebtoken';
+import { User } from '../models/user';
 import { Password } from '../services/password';
 
 const router = express.Router();
 
-router.post('/api/users/password-reset/reset', [
+router.post('/api/auth/password-reset/reset', [
     body('token')
         .notEmpty()
         .withMessage('Token must be provided'),
@@ -34,7 +34,7 @@ router.post('/api/users/password-reset/reset', [
     user.password = await Password.toHash(password);
     await user.save();
 
-    res.status(200).send({ message: 'Password reset successful' });
+    res.status(200).send(user);
 });
 
 export { router as resetPasswordRouter };

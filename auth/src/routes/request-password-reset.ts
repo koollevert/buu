@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-router.post('/api/users/password-reset/request', [
+router.post('/api/auth/password-reset/request', [
     body('email')
         .isEmail()
         .withMessage('Email must be valid')
