@@ -16,8 +16,8 @@ spec:
         - name: auth-mongo
           image: mongo:4.2.6-bionic
   # Add imagePullSecrets under the spec.template section
-      imagePullSecrets:
-        - name: tckt
+      # imagePullSecrets:
+      #   - name: tckt
 ---
 apiVersion: v1
 kind: Service
