@@ -13,6 +13,7 @@ interface UserModel extends mongoose.Model<UserDoc>{
 interface UserDoc extends mongoose.Document{
     email: string;
     password: string;
+    isVerified: boolean;
 }
 
 
@@ -25,6 +26,10 @@ const userSchema= new mongoose.Schema({
     password:{
         type: String,
         required: true,
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 }, {
     toJSON:{

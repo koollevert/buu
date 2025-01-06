@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-// import jwt, { Secret } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 import { validateRequest, BadRequestError } from '@selmathistckt/common';
+import { sendVerificationEmail } from '../services/emailService';
 
 const router = express.Router();
 
@@ -29,16 +29,17 @@ router.post('/api/auth/signup', [
         const user = User.build({ email, password });
         await user.save();
 
-        const userJwt = jwt.sign(
+        const verificationToken = jwt.sign(
             {
                 id: user.id,
                 email: user.email
             },
-            process.env.JWT_KEY!
+            process.env.JWT_KEY!,
+            { expiresIn: '1h' } // Token expires in 1 hour
         );
 
-        // Store it on session object
-        req.session.jwt=userJwt; 
+        // Send verification email
+        await sendVerificationEmail(email, verificationToken);
 
         res.status(201).send(user);
     }
