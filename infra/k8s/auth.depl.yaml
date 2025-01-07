@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: joshuamumo/auth  # Replace tcktcontainerregistry with your actual ACR name
+          image: joshuamumo/auth  # Replace with your actual image
           env:
             - name: MONGO_URL
               value: 'mongodb://auth-mongo-srv:27017/auth'
@@ -23,7 +23,12 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
-      
+            - name: RESEND_API_KEY
+              valueFrom:
+                secretKeyRef:  # Fixed indentation here
+                  name: resend-api-key
+                  key: RESEND_API_KEY
+      # Uncomment and configure imagePullSecrets if needed
       # imagePullSecrets:
       #   - name: tckt
 ---

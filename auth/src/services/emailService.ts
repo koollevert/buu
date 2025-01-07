@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const domain = process.env.APP_URL; // Use a backend-specific environment variable
+const domain = process.env.NEXT_PUBLIC_AUTH_API_URL; // Use a backend-specific environment variable
 
 export async function sendPasswordResetEmail(email: string, token: string) {
     const resetLink = `${domain}/auth/new-password?token=${token}`;
