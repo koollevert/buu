@@ -17,15 +17,23 @@ const app = express();
 app.set('trust proxy', true);
 app.use(json());
 
+
 app.use(
   cookieSession({
-    signed: true, // Enable signing of cookies
-    keys: [process.env.COOKIE_SECRET_KEY || 'default_secret_key'], // Secret key to sign the cookies
-    secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
-    httpOnly: true, // Make cookies inaccessible to JavaScript
-    maxAge: 24 * 60 * 60 * 1000, // Set cookie expiry (1 day)
+    signed: false,
+    secure: process.env.NODE_ENV !== 'test',
   })
 );
+
+// app.use(
+//   cookieSession({
+//     signed: false, // Enable signing of cookies
+//     keys: [process.env.COOKIE_SECRET_KEY || 'default_secret_key'], // Secret key to sign the cookies
+//     secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
+//     httpOnly: true, // Make cookies inaccessible to JavaScript
+//     maxAge: 24 * 60 * 60 * 1000, // Set cookie expiry (1 day)
+//   })
+// );
 
 // Initialize Passport.js and its session management
 app.use(passport.initialize());

@@ -3,27 +3,28 @@ kind: Ingress
 metadata:
   name: ingress-service
   annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true" # Use if regex is necessary
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
-  ingressClassName: nginx # Specifies the ingress class
+  ingressClassName: nginx
   rules:
     - host: tikitika.dev
       http:
         paths:
-          - path: /api/auth
-            pathType: Prefix
+          - path: /api/auth/?(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: auth-srv
                 port:
                   number: 3000
-          - path: /
-            pathType: Prefix
+          - path: /?(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: client-srv
                 port:
                   number: 3000
+
 
 
           # - path: /api/payments/?(.*)
