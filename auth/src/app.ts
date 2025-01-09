@@ -46,10 +46,24 @@ app.use(signoutRouter);
 app.use(signupRouter);
 app.use(oauthRouter);  // Use OAuth routes
 
-app.all('*', async (req, res) => {
-  throw new NotFoundError();
+// Catch-all route for handling undefined routes
+app.all('*', (req, res) => {
+  res.status(404).send({ message: 'Route not found' });
 });
 
-app.use(errorHandler);
+// Global error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err); // Log the error for debugging
+  res.status(500).send({
+    message: 'Something went wrong',
+    error: err.message,
+  });
+});
+
+// app.all('*', async (req, res) => {
+//   throw new NotFoundError();
+// });
+
+// app.use(errorHandler);
 
 export { app };
