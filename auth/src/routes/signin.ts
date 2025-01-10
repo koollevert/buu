@@ -47,7 +47,12 @@ router.post('/api/auth/signin',
         // Store it on session object
         req.session.jwt = userJwt;
 
-        res.status(200).send(existingUser);
+        // Send user details along with JWT
+        res.status(200).send({
+            id: existingUser.id,
+            email: existingUser.email,
+            jwt: userJwt
+        });
     }
 );
 
