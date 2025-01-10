@@ -30,6 +30,7 @@ interface UserDoc extends mongoose.Document {
   name?: string;
   emailVerified?: Date;
   image?: string;
+  accounts: mongoose.Types.Array<AccountDoc>;
 }
 
 const userSchema = new mongoose.Schema({
@@ -63,7 +64,11 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-  }
+  },
+  accounts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Account'
+  }]
 }, {
   toJSON: {
     transform(doc, ret) {
@@ -179,6 +184,9 @@ const accountSchema = new mongoose.Schema({
     }
   }
 });
+
+// Ensure the combination of provider and providerAccountId is unique
+accountSchema.index({ provider: 1, providerAccountId: 1 }, { unique: true });
 
 accountSchema.statics.build = (attrs: AccountAttrs) => {
   return new Account(attrs);
