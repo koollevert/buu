@@ -12,6 +12,7 @@
   "dependencies": {
     "@selmathistckt/common": "^1.0.4",
     "@types/express": "^4.17.21",
+    "axios": "^1.7.9",
     "connect-mongo": "^5.1.0",
     "cookie-session": "^2.1.0",
     "dotenv": "^16.4.7",

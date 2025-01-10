@@ -186,7 +186,7 @@ const accountSchema = new mongoose.Schema({
 });
 
 // Ensure the combination of provider and providerAccountId is unique
-accountSchema.index({ provider: 1, providerAccountId: 1 }, { unique: true });
+accountSchema.index({ provider: 1, providerAccountId: 1 }, { unique: true } as any);
 
 accountSchema.statics.build = (attrs: AccountAttrs) => {
   return new Account(attrs);

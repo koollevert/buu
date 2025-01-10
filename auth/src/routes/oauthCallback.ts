@@ -15,24 +15,28 @@ router.post('/api/auth/oauth/callback', async (req: Request, res: Response) => {
     throw new BadRequestError('Code and provider are required');
   }
 
+  if (provider === 'google') {
+    throw new BadRequestError('Google provider is temporarily disabled');
+  }
+
   try {
     // 1. Exchange the authorization code for access token
-    let accessToken: string;
+    let accessToken: string = ''; // Initialize accessToken to avoid error
     if (provider === 'google') {
-      const response = await axios.post(
-        `https://oauth2.googleapis.com/token`,
-        null,
-        {
-          params: {
-            code,
-            client_id: process.env.GOOGLE_CLIENT_ID,
-            client_secret: process.env.GOOGLE_CLIENT_SECRET,
-            redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-            grant_type: 'authorization_code',
-          },
-        }
-      );
-      accessToken = response.data.access_token;
+      // const response = await axios.post(
+      //   `https://oauth2.googleapis.com/token`,
+      //   null,
+      //   {
+      //     params: {
+      //       code,
+      //       client_id: process.env.GOOGLE_CLIENT_ID,
+      //       client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      //       redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      //       grant_type: 'authorization_code',
+      //     },
+      //   }
+      // );
+      // accessToken = response.data.access_token;
     } else if (provider === 'github') {
       const response = await axios.post(
         `https://github.com/login/oauth/access_token`,
@@ -54,12 +58,12 @@ router.post('/api/auth/oauth/callback', async (req: Request, res: Response) => {
     // 2. Fetch user data from OAuth provider
     let userData: any;
     if (provider === 'google') {
-      const googleResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      userData = googleResponse.data;
+      // const googleResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+      //   headers: {
+      //     Authorization: `Bearer ${accessToken}`,
+      //   },
+      // });
+      // userData = googleResponse.data;
     } else if (provider === 'github') {
       const githubResponse = await axios.get('https://api.github.com/user', {
         headers: {
