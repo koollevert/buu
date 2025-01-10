@@ -12,6 +12,9 @@ interface UserAttrs {
   role?: UserRole;
   isTwoFactorEnabled?: boolean;
   twoFactorConfirmation?: mongoose.Schema.Types.ObjectId;
+  name?: string;
+  emailVerified?: Date;
+  image?: string;
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
@@ -24,6 +27,9 @@ interface UserDoc extends mongoose.Document {
   role: UserRole;
   isTwoFactorEnabled: boolean;
   twoFactorConfirmation?: mongoose.Schema.Types.ObjectId;
+  name?: string;
+  emailVerified?: Date;
+  image?: string;
 }
 
 const userSchema = new mongoose.Schema({
@@ -48,6 +54,15 @@ const userSchema = new mongoose.Schema({
   twoFactorConfirmation: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'TwoFactorConfirmation'
+  },
+  name: {
+    type: String,
+  },
+  emailVerified: {
+    type: Date,
+  },
+  image: {
+    type: String,
   }
 }, {
   toJSON: {
@@ -114,4 +129,61 @@ twoFactorConfirmationSchema.statics.build = (attrs: TwoFactorConfirmationAttrs) 
 
 const TwoFactorConfirmation = mongoose.model<TwoFactorConfirmationDoc, TwoFactorConfirmationModel>('TwoFactorConfirmation', twoFactorConfirmationSchema);
 
-export { User, UserRole, UserDoc, TwoFactorConfirmation };
+interface AccountAttrs {
+  userId: string;
+  type: string;
+  provider: string;
+  providerAccountId: string;
+}
+
+interface AccountDoc extends mongoose.Document {
+  userId: string;
+  user: UserDoc;
+  type: string;
+  provider: string;
+  providerAccountId: string;
+}
+
+interface AccountModel extends mongoose.Model<AccountDoc> {
+  build(attrs: AccountAttrs): AccountDoc;
+}
+
+const accountSchema = new mongoose.Schema({
+  userId: {
+    type: String,
+    required: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  type: {
+    type: String,
+    required: true
+  },
+  provider: {
+    type: String,
+    required: true
+  },
+  providerAccountId: {
+    type: String,
+    required: true
+  }
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v;
+    }
+  }
+});
+
+accountSchema.statics.build = (attrs: AccountAttrs) => {
+  return new Account(attrs);
+};
+
+const Account = mongoose.model<AccountDoc, AccountModel>('Account', accountSchema);
+
+export { User, UserRole, UserDoc, TwoFactorConfirmation, Account };
