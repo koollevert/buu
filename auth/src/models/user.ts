@@ -1,60 +1,117 @@
 import mongoose from "mongoose";
 import { Password } from "../services/password";
 
-interface UserAttrs{
-    email: string;
-    password: string;
+enum UserRole {
+  ADMIN = 'ADMIN',
+  USER = 'USER'
 }
 
-interface UserModel extends mongoose.Model<UserDoc>{
-    build(attrs: UserAttrs): UserDoc;
+interface UserAttrs {
+  email: string;
+  password: string;
+  role?: UserRole;
+  isTwoFactorEnabled?: boolean;
+  twoFactorConfirmation?: mongoose.Schema.Types.ObjectId;
 }
 
-interface UserDoc extends mongoose.Document{
-    email: string;
-    password: string;
-    isVerified: boolean;
+interface UserModel extends mongoose.Model<UserDoc> {
+  build(attrs: UserAttrs): UserDoc;
 }
 
+interface UserDoc extends mongoose.Document {
+  email: string;
+  password: string;
+  role: UserRole;
+  isTwoFactorEnabled: boolean;
+  twoFactorConfirmation?: mongoose.Schema.Types.ObjectId;
+}
 
-const userSchema= new mongoose.Schema({
-    email:{
-        type: String,
-        required: true
-    },
-
-    password:{
-        type: String,
-        required: true,
-    },
-    isVerified: {
-        type: Boolean,
-        default: false
-    }
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    enum: Object.values(UserRole),
+    default: UserRole.USER
+  },
+  isTwoFactorEnabled: {
+    type: Boolean,
+    default: false
+  },
+  twoFactorConfirmation: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'TwoFactorConfirmation'
+  }
 }, {
-    toJSON:{
-        transform(doc, ret){
-            ret.id=ret._id;
-            delete ret._id;
-            delete ret.password;
-            delete ret.__v;
-        }
+  toJSON: {
+    transform(doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.password;
+      delete ret.__v;
     }
+  }
 });
 
-userSchema.pre('save', async function(done){
-    if(this.isModified('password')){
-        const hashed=await Password.toHash(this.get('password'));
-        this.set('password', hashed);
-    }
-    done();
+userSchema.pre('save', async function (done) {
+  if (this.isModified('password')) {
+    const hashed = await Password.toHash(this.get('password'));
+    this.set('password', hashed);
+  }
+  done();
 });
 
-userSchema.statics.build=(attrs: UserAttrs)=>{
-    return new User(attrs)
-}
+userSchema.statics.build = (attrs: UserAttrs) => {
+  return new User(attrs);
+};
 
 const User = mongoose.model<UserDoc, UserModel>('User', userSchema);
 
+interface TwoFactorConfirmationAttrs {
+  userId: string;
+}
 
-export {User};
+interface TwoFactorConfirmationDoc extends mongoose.Document {
+  userId: string;
+  user: UserDoc;
+}
+
+interface TwoFactorConfirmationModel extends mongoose.Model<TwoFactorConfirmationDoc> {
+  build(attrs: TwoFactorConfirmationAttrs): TwoFactorConfirmationDoc;
+}
+
+const twoFactorConfirmationSchema = new mongoose.Schema({
+  userId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v;
+    }
+  }
+});
+
+twoFactorConfirmationSchema.statics.build = (attrs: TwoFactorConfirmationAttrs) => {
+  return new TwoFactorConfirmation(attrs);
+};
+
+const TwoFactorConfirmation = mongoose.model<TwoFactorConfirmationDoc, TwoFactorConfirmationModel>('TwoFactorConfirmation', twoFactorConfirmationSchema);
+
+export { User, UserRole, UserDoc, TwoFactorConfirmation };
