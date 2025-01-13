@@ -3,13 +3,15 @@ import passport from 'passport';
 import cookieSession from 'cookie-session';
 import { json } from 'body-parser';
 
-import { errorHandler, NotFoundError } from '@selmathistckt/common';
+// import { errorHandler, NotFoundError } from '@selmathistckt/common';
 import { currentUserRouter } from './routes/current-user';
 import { signinRouter } from './routes/signin';
 import { signoutRouter } from './routes/signout';
 import { signupRouter } from './routes/signup';
 import { oauthRouter } from './routes/oauth';  // Import OAuth routes
 import './services/passport'; // Import Passport configuration
+import { NotFoundError } from './errors/not-found-error';
+import { errorHandler } from '@selmathistckt/common';
 
 const app = express();
 
@@ -47,23 +49,23 @@ app.use(signupRouter);
 app.use(oauthRouter);  // Use OAuth routes
 
 // Catch-all route for handling undefined routes
-app.all('*', (req, res) => {
-  res.status(404).send({ message: 'Route not found' });
-});
-
-// Global error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err); // Log the error for debugging
-  res.status(500).send({
-    message: 'Something went wrong',
-    error: err.message,
-  });
-});
-
-// app.all('*', async (req, res) => {
-//   throw new NotFoundError();
+// app.all('*', (req, res) => {
+//   res.status(404).send({ message: 'Route not found' });
 // });
 
-// app.use(errorHandler);
+// // Global error handling middleware
+// app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+//   console.error(err); // Log the error for debugging
+//   res.status(500).send({
+//     message: 'Something went wrong',
+//     error: err.message,
+//   });
+// });
+
+app.all('*', async (req, res) => {
+  throw new NotFoundError();
+});
+
+app.use(errorHandler);
 
 export { app };

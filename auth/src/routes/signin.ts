@@ -3,7 +3,8 @@ import { User } from '../models/user';
 import jwt from 'jsonwebtoken';
 import { Password } from '../services/password';
 import { body } from 'express-validator';
-import { validateRequest, BadRequestError } from '@selmathistckt/common';
+import { BadRequestError } from '../errors/bad-request-error';
+import { validateRequest } from '../middlewares/validate-request';
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.post('/api/auth/signin',
 
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
-            throw new BadRequestError('Invalid credentials');
+            throw new Error('Invalid credentials');
         }
 
         const passwordsMatch = await Password.compare(
@@ -32,7 +33,7 @@ router.post('/api/auth/signin',
         );
 
         if (!passwordsMatch) {
-            throw new BadRequestError('Invalid Credentials');
+            throw new BadRequestError('Invalid credentials');
         }
 
         // Generate JWT

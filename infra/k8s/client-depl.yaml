@@ -2,12 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client-depl
+  namespace: default
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: '{"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"client-depl","namespace":"default"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"client"}},"template":{"metadata":{"labels":{"app":"client"}},"spec":{"containers":[{"image":"joshuamumo/client","name":"client"}],"env":[{"name":"NEXTAUTH-SECRET","valueFrom":{"secretKeyRef":{"key":"NEXTAUTH-SECRET","name":"nextauth-secret"}}},{"name":"NEXT_PUBLIC_APP_URL","valueFrom":{"secretKeyRef":{"key":"NEXT_PUBLIC_APP_URL","name":"next-public-app-url"}}}]}}}}'
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: client
-  template:    
+  template:
     metadata:
       labels:
         app: client
@@ -15,7 +18,17 @@ spec:
       containers:
         - name: client
           image: joshuamumo/client
-
+          env:
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nextauth-secret
+                  key: NEXTAUTH_SECRET
+            - name: NEXT_PUBLIC_APP_URL
+              valueFrom:
+                secretKeyRef:
+                  name: next-public-app-url
+                  key: NEXT_PUBLIC_APP_URL
 ---
 apiVersion: v1
 kind: Service
